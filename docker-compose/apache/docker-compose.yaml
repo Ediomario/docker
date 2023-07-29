@@ -1,0 +1,22 @@
+version: "3.9"
+Remote side unexpectedly closed network connection
+  php-apache:
+──────────────────────────────────────────────────────────────────────────────────────
+      - "80:80"
+Session stoppeduild/php'
+    - Press <Return> to exit tab
+    - Press R to restart session/www/html
+    - Press S to save terminal output to file
+    ports:
+      - "3306:3306"
+    build: './build/mysql'
+    environment:
+      MYSQL_ROOT_PASSWORD: "pass_pwd"
+      MYSQL_DATABASE: "site"
+      MYSQL_USER: "site"
+      MYSQL_PASSWORD: "pass_pwd"
+    volumes:
+      - dbData:/var/lib/mysql
+volumes:
+  dbData:
+
