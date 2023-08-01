@@ -7,7 +7,7 @@ networks:
 services:
   mysql:
     container_name: mysql
-    image: mysql:8.0
+    image: mysql:5.7
     networks:
       - network-zabbix
     ports:
@@ -22,7 +22,7 @@ services:
 
   zabbix-server:
     container_name: zabbix-server
-    image: zabbix/zabbix-server-mysql:alpine-6.0-latest
+    image: zabbix/zabbix-server-mysql:ubuntu-5.0.1
     networks:
       - network-zabbix
     links:
@@ -42,7 +42,7 @@ services:
 
   zabbix-frontend:
     container_name: zabbix-frontend
-    image: zabbix/zabbix-web-apache-mysql:alpine-6.0-latest
+    image: zabbix/zabbix-web-apache-mysql:ubuntu-5.0.1
     networks:
       - network-zabbix
     links:
@@ -80,7 +80,7 @@ services:
       - zabbix-server
   zabbix-agent:
     container_name: zabbix-agent
-    image: zabbix/zabbix-agent2:alpine-6.0-latest
+    image: zabbix/zabbix-agent2:alpine-5.0.1
     user: root
     networks:
       - network-zabbix
