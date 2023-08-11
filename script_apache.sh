@@ -1,6 +1,14 @@
 
 #!/bin/bash
 
+# -m= memoria RAM total
+# --cpus= processador total
+# --memory-swap= total memoria RAM swap
+# -v= Mapeamento pasta local
+# -p= mapeamento porta de acesso
+
+# Criar diretorio para ser mapeado
+
 docker volume create dbData
 
 #Criar container Banco de dados MariaDB
@@ -21,6 +29,9 @@ docker run --name mariadb -t \
 mkdir -p ./html/www
 #Criar container Apache+PhP
 docker run --name php-apache  \
+             -m 1G \
+             --memory-swap 2G \
+             --cpus 2 \
              --network=bridge \
              --restart unless-stopped \
              -p 80:80 \
