@@ -76,12 +76,23 @@ docker run -d --name=grafana \
 
 #Install nginx
 
-mkdir -p ./doer-nginxck
+mkdir -p ./nginx
 
 docker run -d --memory-swap 1G  -m 512MB --cpus 1 \
         --name nginx \
         --restart=always \
         --network=rede-interna \
-        -p 80:80 \
-        -v ~/docker-nginx/html:/usr/share/nginx/html nginx
+        -p 81:80 \
+        -v ~/nginx/html:/usr/share/nginx/html nginx
+
+#Install Portainer --- Gerenciador de container
+ 
+docker volume create portainer_data
+
+docker run -d -p 8000:8000 \
+      -p 7900:9000 \
+      --name portainer \
+      --restart=always \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v portainer_data:/data portainer/portainer-ce
       
