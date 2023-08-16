@@ -83,7 +83,7 @@ docker run -d --memory-swap 1G  -m 512MB --cpus 1 \
         --restart=always \
         --network=rede-interna \
         -p 81:80 \
-        -v ~/nginx/html:/usr/share/nginx/html nginx
+        -v ./nginx/html:/usr/share/nginx/html nginx
 
 #Install Portainer --- Gerenciador de container
  
