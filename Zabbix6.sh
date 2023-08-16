@@ -51,7 +51,7 @@ sudo docker run --name zabbix-web-nginx-pgsql -t \
       -e POSTGRES_DB="zabbix" \
       --network=rede-interna \
       -p 443:8443 \
-      -p 80:8080 \
+      -p 8080:8080 \
       -v /etc/ssl/nginx:/etc/ssl/nginx:ro \
       --restart unless-stopped \
       -d zabbix/zabbix-web-nginx-pgsql:alpine-6.4-latest
@@ -71,4 +71,14 @@ docker run -d --name=grafana \
       -v grafana-storage:/var/lib/grafana \
       grafana/grafana-enterprise
 
+#Install nginx
+
+mkdir -p ./docker-nginx
+
+docker run -d --memory-swap 2G  -m 1G --cpus 1 \
+        --name nginx \
+        --restart=always \
+        --network=rede-interna \
+        -p 80:80 \
+        -v ~/docker-nginx/html:/usr/share/nginx/html nginx
       
