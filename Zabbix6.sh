@@ -4,7 +4,7 @@
 
 docker network create -d bridge rede-interna --subnet 172.20.0.0/28
 
-sudo docker run --name postgres-server -t \
+docker run --name postgres-server -t \
       -e POSTGRES_USER="zabbix" \
       -e POSTGRES_PASSWORD="zabbix_pwd" \
       -e POSTGRES_DB="zabbix" \
@@ -12,7 +12,7 @@ sudo docker run --name postgres-server -t \
       --restart unless-stopped \
       -d postgres:latest
 
-sudo docker run --name zabbix-snmptraps -t \
+docker run --name zabbix-snmptraps -t \
       -v /zbx_instance/snmptraps:/var/lib/zabbix/snmptraps:rw \
       -v /var/lib/zabbix/mibs:/usr/share/snmp/mibs:ro \
       --network=rede-interna \
@@ -20,7 +20,7 @@ sudo docker run --name zabbix-snmptraps -t \
       --restart unless-stopped \
       -d zabbix/zabbix-snmptraps:alpine-6.4-latest
 
-sudo docker run --name zabbix-server-pgsql -it \
+docker run --name zabbix-server-pgsql -it \
       -e DB_SERVER_HOST="postgres-server" \
       -e POSTGRES_USER="zabbix" \
       -e POSTGRES_PASSWORD="zabbix_pwd" \
@@ -43,7 +43,7 @@ sudo docker run --name zabbix-server-pgsql -it \
       --volumes-from zabbix-snmptraps \
       --restart unless-stopped \
       -d zabbix/zabbix-server-pgsql:alpine-6.4-latest
-sudo docker run --name zabbix-web-nginx-pgsql -t \
+docker run --name zabbix-web-nginx-pgsql -t \
       -e ZBX_SERVER_HOST="zabbix-server-pgsql" \
       -e DB_SERVER_HOST="postgres-server" \
       -e POSTGRES_USER="zabbix" \
