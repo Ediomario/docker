@@ -4,10 +4,13 @@
 
 docker network create -d bridge rede-interna --subnet 172.20.0.0/28
 
+mkdir -p ./database
+
 docker run --name postgres-server -t \
       -e POSTGRES_USER="zabbix" \
       -e POSTGRES_PASSWORD="zabbix_pwd" \
       -e POSTGRES_DB="zabbix" \
+      -v ./database:/var/lib/postgresql/data
       --network=rede-interna \
       --restart unless-stopped \
       -d postgres:latest
@@ -73,9 +76,9 @@ docker run -d --name=grafana \
 
 #Install nginx
 
-mkdir -p ./docker-nginx
+mkdir -p ./doer-nginxck
 
-docker run -d --memory-swap 2G  -m 1G --cpus 1 \
+docker run -d --memory-swap 1G  -m 512MB --cpus 1 \
         --name nginx \
         --restart=always \
         --network=rede-interna \
