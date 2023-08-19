@@ -10,3 +10,6 @@ services:
     volumes:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
+
+#usuario: admin@example.com
+#senha:changeme
