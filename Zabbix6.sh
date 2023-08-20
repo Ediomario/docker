@@ -4,13 +4,12 @@
 
 docker network create -d bridge rede-interna --subnet 172.20.0.0/28
 
-mkdir -p ./database
-
 docker run --name postgres-server -t \
       -e POSTGRES_USER="zabbix" \
       -e POSTGRES_PASSWORD="zabbix_pwd" \
       -e POSTGRES_DB="zabbix" \
-      -v ./database:/var/lib/postgresql/data
+      -e PGDATA=/var/lib/postgresql/data/pgdata \
+      -v ./data:/var/lib/postgresql/data \
       --network=rede-interna \
       --restart unless-stopped \
       -d postgres:latest
