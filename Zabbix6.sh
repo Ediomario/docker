@@ -9,7 +9,7 @@ docker run --name postgres-server -t \
       -e POSTGRES_PASSWORD="zabbix_pwd" \
       -e POSTGRES_DB="zabbix" \
       -e PGDATA=/var/lib/postgresql/data/pgdata \
-      -v ./data:/var/lib/postgresql/data \
+      -v ./dbData:/var/lib/postgresql/data \
       --network=rede-interna \
       --restart unless-stopped \
       -d postgres:latest
