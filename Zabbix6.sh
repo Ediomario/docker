@@ -3,13 +3,15 @@
 # Criar rede interna para integrar zabbix+postgres+grafana
 
 docker network create -d bridge rede-interna --subnet 172.20.0.0/28
+cd
+create docker volume dbData
 
 docker run --name postgres-server -t \
       -e POSTGRES_USER="zabbix" \
       -e POSTGRES_PASSWORD="zabbix_pwd" \
       -e POSTGRES_DB="zabbix" \
       -e PGDATA=/var/lib/postgresql/data/pgdata \
-      -v ./dbData:/var/lib/postgresql/data \
+      -v dbData:/var/lib/postgresql/data \
       --network=rede-interna \
       --restart unless-stopped \
       -d postgres:latest
