@@ -1,30 +1,40 @@
-
 version: "3.3"
 
 services:
-
   traefik:
-    image: "traefik:latest"
-    container_name: "traefik"
+    image: "traefik:v2.0.0"
     command:
-      #- "--log.level=DEBUG"
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker
+      - --api
+      - --log.level=DEBUG
+      - --certificatesresolvers.letsencrypt.acme.email=email@provider.example
+      - --certificatesresolvers.letsencrypt.acme.storage=/acme.json
+      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
     ports:
-      - "8082:80"
-      - "8083:8080"
-      - "8084:443"
+      - "80:80"
+      - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-
-  whoami:
-    image: "traefik/whoami"
-    container_name: "simple-service"
+      - "./acme.json:/acme.json"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
-      - "traefik.http.routers.whoami.entrypoints=web"
+      # Dashboard
+      - "traefik.http.routers.traefik.rule=Host(`dashboard.caiodelgado.com.br`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
+  webapp:
+    image: containous/whoami:v1.3.0
+    labels:
+      - "traefik.http.routers.app1.rule=Host(`web.caiodelgado.com.br`)"
+      - "traefik.http.routers.app1.entrypoints=websecure"
+      - "traefik.http.routers.app1.tls=true"
+      - "traefik.http.routers.app1.tls.certresolver=letsencrypt"
+
+# https://caiodelgado.dev/docker-e-traefik/
