@@ -1,9 +1,10 @@
+
 version: "3.3"
 
 services:
 
   traefik:
-    image: "traefik:v2.10"
+    image: "traefik:latest"
     container_name: "traefik"
     command:
       #- "--log.level=DEBUG"
@@ -11,9 +12,11 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
     ports:
-      - "80:80"
-      - "8080:8080"
+      - "8082:80"
+      - "8083:8080"
+      - "8084:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
@@ -24,3 +27,4 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
       - "traefik.http.routers.whoami.entrypoints=web"
+
