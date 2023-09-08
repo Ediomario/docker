@@ -58,3 +58,4 @@ volumes:
     external: true
   n8n_data:
     external: true
+    # https://docs.n8n.io/hosting/installation/server-setups/docker-compose/#5-create-docker-compose-file
