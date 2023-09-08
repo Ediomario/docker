@@ -1,0 +1,93 @@
+version: '3.1'
+
+services:
+  df:
+    image: dalorad/freerad
+    container_name: dalofree
+    networks:
+     macvl:
+      ipv4_address: 172.16.0.12
+    mac_address: 1e:4c:4d:a3:8b:12 #<- whatever you want
+    restart: unless-stopped
+    links:
+      - "mysql"
+    depends_on:
+      - "mysql" 
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://172.16.0.10:513"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "1812:1812"
+      - "1813:1813"
+    volumes:
+      - ./config/setup.sql:/etc/freeradius/mods-config/sql/main/mysql/setup.sql:rw
+      - ./config/sql:/etc/freeradius/mods-available/sql:rw
+      - ./config/eap:/etc/freeradius/mods-available/eap:rw
+      - ./config/default:/etc/freeradius/sites-available/default:rw
+      - ./config/proxy.conf:/etc/freeradius/proxy.conf:rw
+      - ./config/inner-tunnel:/etc/freeradius/sites-available/inner-tunnel:rw
+      - ./config/init.sh:/var/www/html/init.sh:rw
+      - ./config/daloradius.conf.php:/var/www/html/library/daloradius.conf.php:rw
+      - /usr/syno/etc/certificate/system/default/fullchain.pem:/etc/ssl/private/server.pem:rw #<- used for SSL
+      - /usr/syno/etc/certificate/system/default/privkey.pem:/etc/ssl/private/server.key:rw #<- used for SSL
+      - ./backup:/var/www/html/var/backup:rw
+      - ./config/mibs/:/usr/share/snmp/mibs/:rw
+      - ./config/000-default.conf:/etc/apache2/sites-available/000-default.conf:rw
+      - ./config/radiusd.conf:/etc/freeradius/radiusd.conf:rw
+      - ./config/dailycounter.conf:/etc/freeradius/mods-config/sql/counter/mysql/dailycounter.conf:rw
+      - ./config/queries.conf:/etc/freeradius/mods-config/sql/main/mysql/queries.conf:rw
+      - ./config/scripts:/var/www/html/contrib/scripts:rw
+# following env. var. might not be neccessary
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=radius
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=YOUR_PASSWORD
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    networks:
+     macvl:
+      ipv4_address: 172.16.0.14
+    mac_address: 1e:4c:4d:a3:8b:14 #<- whatever you want
+    restart: unless-stopped
+#    links:
+#      - "radius:mysql"
+    depends_on:
+      - "mysql" 
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://172.16.0.10:513"
+    ports:
+      - "80:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+      ADMINER_DESIGN: 'nette'
+
+  mysql:
+    image: mysql/bionic:latest
+    container_name: mysql
+#    command: --default-authentication-plugin=mysql_native_password
+    networks:
+     macvl:
+      ipv4_address: 172.16.0.13
+    mac_address: 1e:4c:4d:a3:8b:13 #<- whatever you want
+    restart: unless-stopped
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://172.16.0.10:513"
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=YOUR_PASSWORD
+
+networks:
+  macvl:
+    external: true
