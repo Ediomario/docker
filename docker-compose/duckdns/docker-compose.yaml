@@ -11,5 +11,6 @@ services:
       - TOKEN=token
       - LOG_FILE=false #optional
     volumes:
-      - /path/to/appdata/config:/config #optional
-    restart: unless-stopped
+      - /mnt/duckdns:/config #optional
+    restart: always
+
