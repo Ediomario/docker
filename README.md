@@ -3,6 +3,7 @@ Script pra container Docker
 - Iniciar o Swarm na Aplicação Docker
 - Comando para criar o cluster swarm
   
+```sh
 docker swarm init --advertise-addr 192.168.XX.XX
 
 ```sh
