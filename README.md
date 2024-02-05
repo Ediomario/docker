@@ -53,3 +53,5 @@ docker service update --force (nomedastack)
 # com o id em mãos substitua '{id}' pelo id obtido
 docker exec -it {id} bash
 ```
+
+

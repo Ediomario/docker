@@ -7,7 +7,7 @@
 # -p= mapeamento porta de acesso
 
 # Criar diretorio para ser mapeado
-mkdir -p ./docker-nginx
+mkdir -p ~/docker-nginx
 
 #Docker installl conteiner
 

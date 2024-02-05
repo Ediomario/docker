@@ -3,11 +3,14 @@
 # Criar rede zabbix-net
 docker network create zabbix-net --subnet 172.20.0.0/16 --ip-range 172.20.240.0/20 
 
+docker volume create dbData
+
 docker run --name mysql-server -t \
              -e MYSQL_DATABASE="zabbix" \
              -e MYSQL_USER="zabbix" \
              -e MYSQL_PASSWORD="zabbix_pwd" \
              -e MYSQL_ROOT_PASSWORD="root_pwd" \
+             -v dbData:/var/lib/mysql \
              --network=zabbix-net \
              --restart unless-stopped \
              -d mysql:8.0 \
