@@ -1,0 +1,127 @@
+version: '2.4'
+
+services:
+
+  pdns-recursor-mysql:
+    image: pschiffe/pdns-recursor:${RECURSOR_TAG:-latest}
+    networks:
+      - pdns-mysql
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    ulimits:
+      nofile:
+        soft: 5000
+        hard: 5000
+
+  mariadb:
+    image: mariadb:11
+    networks:
+      pdns-mysql:
+        aliases:
+          - db
+          - mysql
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mariadb:/var/lib/mysql:Z
+    environment:
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--su=mysql', '--connect', '--innodb_initialized']
+      timeout: 10s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    networks:
+      - pdns-mysql
+    ports:
+      - '8988:80'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    healthcheck:
+      test: ['CMD', 'curl', '-fsSL', 'http://127.0.0.1:80']
+      timeout: 10s
+      retries: 5
+
+  pdns-mysql-master:
+    image: pschiffe/pdns-mysql:${PDNS_MYSQL_TAG:-latest}
+    hostname: ns1.example.com
+    networks:
+      pdns-mysql:
+        ipv4_address: 172.6.0.20
+        aliases:
+          - pdns
+    extra_hosts:
+      - 'ns1.example.com:172.6.0.20'
+      - 'ns2.example.com:172.6.0.21'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - PDNS_gmysql_password=my-secret-pw
+      - PDNS_master=yes
+      - PDNS_api=yes
+      - PDNS_api_key=secret
+      - PDNS_webserver=yes
+      - PDNS_webserver_address=0.0.0.0
+      - PDNS_webserver_allow_from=172.6.0.0/16
+      - PDNS_version_string=anonymous
+      - PDNS_default_ttl=1500
+      - PDNS_allow_axfr_ips=172.6.0.21
+      - PDNS_only_notify=172.6.0.21
+    depends_on:
+      - mariadb
+
+  pdns-mysql-slave:
+    image: pschiffe/pdns-mysql:${PDNS_MYSQL_TAG:-latest}
+    hostname: ns2.example.com
+    networks:
+      pdns-mysql:
+        ipv4_address: 172.6.0.21
+    extra_hosts:
+      - 'ns1.example.com:172.6.0.20'
+      - 'ns2.example.com:172.6.0.21'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - PDNS_gmysql_dbname=powerdnsslave
+      - PDNS_gmysql_password=my-secret-pw
+      - PDNS_slave=yes
+      - PDNS_superslave=yes
+      - PDNS_webserver=yes
+      - PDNS_webserver_address=0.0.0.0
+      - PDNS_webserver_allow_from=172.6.0.0/16
+      - PDNS_version_string=anonymous
+      - PDNS_disable_axfr=yes
+      - PDNS_allow_notify_from=172.6.0.20
+      - SUPERMASTER_IPS=172.6.0.20
+    depends_on:
+      - mariadb
+      - pdns-mysql-master
+
+  pdns-admin-mysql:
+    image: pschiffe/pdns-admin
+    networks:
+      pdns-mysql:
+        aliases:
+          - pdns-admin
+    ports:
+      - '8989:8080'
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - PDNS_ADMIN_SQLA_DB_PASSWORD=my-secret-pw
+      - PDNS_VERSION=4.8
+      - PDNS_API_KEY=secret
+    depends_on:
+      - mariadb
+      - pdns-mysql-master
+
+networks:
+  pdns-mysql:
+    ipam:
+      config:
+        - subnet: 172.6.0.0/16
+          gateway: 172.6.0.1
+
+volumes:
+  mariadb:
