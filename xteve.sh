@@ -1,3 +1,5 @@
+#!/bin/bash
+
 docker run -d \
 	--name=xteve_lazystream \
 	-p 34400:34400 \
@@ -11,3 +13,5 @@ docker run -d \
 	-v /mnt/user/appdata/xteve/playlists/:/playlists:rw \
 	-v /tmp/xteve/:/tmp/xteve:rw \
 	taylorbourne/xteve_lazystream
+ 
+# https://github.com/taylorbourne/xteve_lazystream/tree/master
