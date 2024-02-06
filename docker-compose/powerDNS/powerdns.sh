@@ -1,10 +1,11 @@
+#!/bin/bash
 
-Mariadb:
+#Mariadb:
 
 docker run --name mariadb -v /home/de:/var/lib/mysql \
  -e MYSQL_ROOT_PASSWORD=powerdns -d mariadb:latest
 
-Master server: 
+#Master server: 
 
 docker run -d -p 53:53 -p 53:53/udp --name pdns-master \
   --hostname ns1.koti.local --link mariadb:mysql \
@@ -24,7 +25,7 @@ docker run -d -p 53:53 -p 53:53/udp --name pdns-master \
   -e PDNS_only_notify=192.168.100.45 \
   pschiffe/pdns-mysql
 
-webadmin:
+#webadmin:
 
 docker run -d --name pdns-admin-uwsgi \
   --link mariadb:mysql --link pdns-master:pdns \
@@ -34,7 +35,7 @@ docker run -d -p 8080:80 --name pdns-admin-static \
   --link pdns-admin-uwsgi:pdns-admin-uwsgi \
   pschiffe/pdns-admin-static:ngoduykhanh
 
-Slave server: 
+#Slave server: 
 
 docker run -d -p 53:53 -p 53:53/udp --name pdns-slave \
   --hostname ns2.koti.local --link mariadb:mysql \
