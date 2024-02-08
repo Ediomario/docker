@@ -1,5 +1,29 @@
-# Docker Swarm
+## Instalndo Docker no linux usando um script
 
+ ```sh
+ curl -fsSL https://get.docker.com -o get-docker.sh
+```
+ ```sh
+ sudo sh get-docker.sh
+```
+ ```sh
+ sudo docker run hello-world
+```
+## Comandos Basicos Docker
+  - Criar um container Nginx web server basico 
+```sh
+docker run --name nginx -d -p 80:80 nginx
+```
+  - Mostrar containers instalados
+```sh
+docker docker ps -a
+```
+  - Remover containers
+```sh
+docker rm -f {id}
+```
+
+## Docker Swarm
 - Iniciar o Swarm na Aplicação Docker
   - Comando para criar o cluster swarm
  ```sh
@@ -53,5 +77,4 @@ docker service update --force (nomedastack)
 # com o id em mãos substitua '{id}' pelo id obtido
 docker exec -it {id} bash
 ```
-
 
