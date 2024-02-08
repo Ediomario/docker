@@ -2,7 +2,7 @@ version: '3'
 services:
   mongo:
     container_name: mongo
-    image: mongo:5.0.13
+    image: mongo:5.0.24-focal
     restart: always
     volumes:
       - mongo_data:/data/db
@@ -18,11 +18,12 @@ services:
 
   graylog:
     container_name: graylog
-    image: graylog/graylog:5.2
+    image: graylog/graylog:5.1
     environment:
       - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
-      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
-      - GRAYLOG_HTTP_EXTERNAL_URI=http://177.152.129.95:9000/
+      #- GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_ROOT_PASSWORD_SHA2=35a26fb17968ca79dedb4f9831a0590904e3408692c81773f0fa8374a2a77ef7
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
     entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 -- /docker-entrypoint.sh
     restart: always
     depends_on:
@@ -30,6 +31,9 @@ services:
       - elasticsearch
     ports:
       - 9000:9000
-
+      - 12201:12201
 volumes:
   mongo_data:
+
+#rash para senha admin no graylog
+#echo -n "Enter Password: " && head -1 < /dev/stdin | tr -d '\n' | sha256sum | cut -d " " -f1
